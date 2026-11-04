@@ -7,7 +7,10 @@
 
 @source './';
 
-/* Manual screenshots ship in both themes, show the one matching the app theme */
+/*
+ * Manual screenshots ship in both themes, show the one matching the app theme: the `data-theme`
+ * attribute where the app sets one, the system's colour scheme where it does not.
+ */
 .docs-shot-dark {
 	display: none;
 }
@@ -16,6 +19,14 @@
 }
 [data-theme='dark'] .docs-shot-light {
 	display: none;
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme]) .docs-shot-dark {
+		display: block;
+	}
+	:root:not([data-theme]) .docs-shot-light {
+		display: none;
+	}
 }
 
 /* Guided tours (driver.js), styled with the DaisyUI theme tokens */
