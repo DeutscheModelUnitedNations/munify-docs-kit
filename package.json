@@ -1,6 +1,6 @@
 {
 	"name": "@deutschemodelunitednations/docs-kit",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "In-app user manual, per-page help, guided tours and generated screenshots for the MUNify SvelteKit apps",
 	"license": "MIT",
 	"type": "module",
