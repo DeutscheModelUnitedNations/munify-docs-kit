@@ -47,7 +47,8 @@ export function shotReferences(sources: string[]) {
 
 /**
  * `data-tour` anchors defined in Svelte markup, including conditional ones like
- * `data-tour={x ? 'a' : 'b'}` and anchors built by a prefix helper
+ * `data-tour={x ? 'a' : 'b'}`, anchors handed to a component that sets the attribute itself
+ * (`<Section tourAnchor="dashboard.links">`), and anchors built by a prefix helper
  * (`` `speakers-list.${name}` `` + `tourAnchor('timer')`).
  */
 export function definedTourAnchors({
@@ -60,7 +61,9 @@ export function definedTourAnchors({
 	const anchors = new Set<string>();
 	for (const file of listFiles({ dir: srcDir, suffix: '.svelte', skip })) {
 		const source = readFileSync(file, 'utf8');
-		for (const [, plain, expression] of source.matchAll(/data-tour=(?:"([^"]+)"|\{([^}]+)\})/g)) {
+		for (const [, plain, expression] of source.matchAll(
+			/(?:data-tour|tourAnchor)=(?:"([^"]+)"|\{([^}]+)\})/g
+		)) {
 			if (plain) anchors.add(plain);
 			for (const [, quoted] of expression?.matchAll(/['"`]([\w.-]+)['"`]/g) ?? []) {
 				anchors.add(quoted);

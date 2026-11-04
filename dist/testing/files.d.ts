@@ -18,7 +18,8 @@ export declare function shotIdsOf({ manifest, pattern }: {
 export declare function shotReferences(sources: string[]): Set<string>;
 /**
  * `data-tour` anchors defined in Svelte markup, including conditional ones like
- * `data-tour={x ? 'a' : 'b'}` and anchors built by a prefix helper
+ * `data-tour={x ? 'a' : 'b'}`, anchors handed to a component that sets the attribute itself
+ * (`<Section tourAnchor="dashboard.links">`), and anchors built by a prefix helper
  * (`` `speakers-list.${name}` `` + `tourAnchor('timer')`).
  */
 export declare function definedTourAnchors({ srcDir, skip }: {

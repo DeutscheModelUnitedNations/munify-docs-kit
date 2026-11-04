@@ -44,7 +44,7 @@ describe('files', () => {
 	mkdirSync(join(root, 'src/paraglide'), { recursive: true });
 	writeFileSync(
 		join(root, 'src/Page.svelte'),
-		`<div data-tour="page.head"></div><div data-tour={open ? 'page.a' : 'page.b'}></div>`
+		`<div data-tour="page.head"></div><div data-tour={open ? 'page.a' : 'page.b'}></div><Section tourAnchor="page.section" />`
 	);
 	writeFileSync(join(root, 'src/paraglide/X.svelte'), `<div data-tour="ignored"></div>`);
 	writeFileSync(
@@ -58,7 +58,12 @@ describe('files', () => {
 
 	it('finds defined and used anchors', () => {
 		const srcDir = join(root, 'src');
-		expect([...definedTourAnchors({ srcDir })].sort()).toEqual(['page.a', 'page.b', 'page.head']);
+		expect([...definedTourAnchors({ srcDir })].sort()).toEqual([
+			'page.a',
+			'page.b',
+			'page.head',
+			'page.section'
+		]);
 		expect(usedTourAnchors({ srcDir }).map((u) => u.anchor)).toEqual(['page.head', 'page.b']);
 	});
 });
