@@ -1,0 +1,88 @@
+{
+	"name": "@deutschemodelunitednations/docs-kit",
+	"version": "0.1.0",
+	"description": "In-app user manual, per-page help, guided tours and generated screenshots for the MUNify SvelteKit apps",
+	"license": "MIT",
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/DeutscheModelUnitedNations/munify-docs-kit.git"
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*"
+	],
+	"sideEffects": [
+		"**/*.css",
+		"./dist/tours/runTour.js"
+	],
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./tour": {
+			"types": "./dist/tours/runTour.d.ts",
+			"default": "./dist/tours/runTour.js"
+		},
+		"./components": {
+			"types": "./dist/components/index.d.ts",
+			"svelte": "./dist/components/index.js",
+			"default": "./dist/components/index.js"
+		},
+		"./testing": {
+			"types": "./dist/testing/index.d.ts",
+			"default": "./dist/testing/index.js"
+		},
+		"./capture": {
+			"types": "./dist/capture/index.d.ts",
+			"default": "./dist/capture/index.js"
+		},
+		"./styles.css": "./dist/styles.css"
+	},
+	"scripts": {
+		"build": "svelte-package -i src/lib -o dist",
+		"prepare": "svelte-package -i src/lib -o dist",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"test": "vitest run",
+		"format": "prettier --write .",
+		"format:check": "prettier --check ."
+	},
+	"dependencies": {
+		"github-slugger": "^2.0.0",
+		"js-yaml": "^5.5.0",
+		"marked": "^18.1.3"
+	},
+	"peerDependencies": {
+		"driver.js": "^1.10.0",
+		"playwright": "^1.50.0",
+		"svelte": "^5.50.0",
+		"vitest": ">=3.0.0"
+	},
+	"peerDependenciesMeta": {
+		"driver.js": {
+			"optional": true
+		},
+		"playwright": {
+			"optional": true
+		},
+		"vitest": {
+			"optional": true
+		}
+	},
+	"devDependencies": {
+		"@sveltejs/package": "^3.0.2",
+		"@types/js-yaml": "^4.0.9",
+		"@types/node": "^24.0.0",
+		"driver.js": "^1.10.2",
+		"playwright": "^1.64.1",
+		"prettier": "^3.6.0",
+		"prettier-plugin-svelte": "^3.4.0",
+		"svelte": "^5.57.2",
+		"svelte-check": "^4.7.7",
+		"typescript": "^6.0.3",
+		"vitest": "^5.0.5"
+	}
+}
