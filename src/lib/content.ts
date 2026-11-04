@@ -11,16 +11,16 @@ export type LoadedDoc = RenderedDoc & {
  * returns: raw markdown keyed by `<root>/<locale>/<slug>.md`, bundled into the server build.
  * Pages missing in a locale fall back to `baseLocale`. Rendered pages are cached per locale.
  */
-export function createDocsContent({
+export function createDocsContent<L extends string>({
 	sources,
 	baseLocale,
 	render,
 	root = '/docs'
 }: {
 	sources: Record<string, string>;
-	baseLocale: string;
+	baseLocale: L;
 	/** Renders a page's source for a reader of `locale`, usually `renderDoc` with app options */
-	render: (input: { source: string; slug: string; locale: string }) => RenderedDoc;
+	render: (input: { source: string; slug: string; locale: L }) => RenderedDoc;
 	root?: string;
 }) {
 	const pattern = new RegExp(`^${root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/([^/]+)/(.+)\\.md$`);
@@ -34,7 +34,7 @@ export function createDocsContent({
 		docExists: (slug: string) => sourceFor({ locale: baseLocale, slug }) !== undefined,
 
 		/** Renders a page in the requested locale, falling back to the base locale. */
-		loadDoc({ slug, locale }: { slug: string; locale: string }): LoadedDoc | undefined {
+		loadDoc({ slug, locale }: { slug: string; locale: L }): LoadedDoc | undefined {
 			const key = `${locale}:${slug}`;
 			const cached = cache.get(key);
 			if (cached) return cached;
@@ -49,7 +49,7 @@ export function createDocsContent({
 		},
 
 		/** Page titles for the sidebar, without rendering the full pages. */
-		docTitles(locale: string): Record<string, string> {
+		docTitles(locale: L): Record<string, string> {
 			const titles: Record<string, string> = {};
 			for (const path of Object.keys(sources)) {
 				const match = pattern.exec(path);
@@ -64,4 +64,4 @@ export function createDocsContent({
 	};
 }
 
-export type DocsContent = ReturnType<typeof createDocsContent>;
+export type DocsContent<L extends string = string> = ReturnType<typeof createDocsContent<L>>;

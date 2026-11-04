@@ -1,4 +1,5 @@
 import { Marked, type TokenizerAndRendererExtension, type Tokens } from 'marked';
+export type { TokenizerAndRendererExtension } from 'marked';
 import GithubSlugger from 'github-slugger';
 import { load as loadYaml } from 'js-yaml';
 import { SCREENSHOT_BASE, SCREENSHOT_THEMES, screenshotPath } from './screenshots';

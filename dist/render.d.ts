@@ -1,4 +1,5 @@
 import { type TokenizerAndRendererExtension } from 'marked';
+export type { TokenizerAndRendererExtension } from 'marked';
 export type DocsFrontmatter = {
     title?: string;
     description?: string;

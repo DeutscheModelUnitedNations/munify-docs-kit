@@ -9,14 +9,14 @@ export type LoadedDoc = RenderedDoc & {
  * returns: raw markdown keyed by `<root>/<locale>/<slug>.md`, bundled into the server build.
  * Pages missing in a locale fall back to `baseLocale`. Rendered pages are cached per locale.
  */
-export declare function createDocsContent({ sources, baseLocale, render, root }: {
+export declare function createDocsContent<L extends string>({ sources, baseLocale, render, root }: {
     sources: Record<string, string>;
-    baseLocale: string;
+    baseLocale: L;
     /** Renders a page's source for a reader of `locale`, usually `renderDoc` with app options */
     render: (input: {
         source: string;
         slug: string;
-        locale: string;
+        locale: L;
     }) => RenderedDoc;
     root?: string;
 }): {
@@ -24,9 +24,9 @@ export declare function createDocsContent({ sources, baseLocale, render, root }:
     /** Renders a page in the requested locale, falling back to the base locale. */
     loadDoc({ slug, locale }: {
         slug: string;
-        locale: string;
+        locale: L;
     }): LoadedDoc | undefined;
     /** Page titles for the sidebar, without rendering the full pages. */
-    docTitles(locale: string): Record<string, string>;
+    docTitles(locale: L): Record<string, string>;
 };
-export type DocsContent = ReturnType<typeof createDocsContent>;
+export type DocsContent<L extends string = string> = ReturnType<typeof createDocsContent<L>>;
