@@ -25,7 +25,7 @@ async function translator({ messagesDir, locale }) {
  * re-stages the data, so shots never see what an earlier one changed.
  */
 export async function captureShots(options) {
-    const { baseUrl, roles, login, stage, outDir, messagesDir, locales, themes = SCREENSHOT_THEMES, filter, localeCookie = 'PARAGLIDE_LOCALE', localizePath = ({ path }) => path, themeStorage = (theme) => ({ theme }), viewport = { width: 1280, height: 800 }, settleMs = 2000 } = options;
+    const { baseUrl, roles, login, stage, outDir, messagesDir, locales, themes = SCREENSHOT_THEMES, filter, localeCookie = 'PARAGLIDE_LOCALE', localizePath = ({ path }) => path, themeStorage = (theme) => ({ theme }), viewport = { width: 1280, height: 800 }, settleMs = 2000, css = '' } = options;
     const shots = options.shots.filter((s) => !filter || s.id.startsWith(filter));
     const browser = await chromium.launch(options.launch);
     const failures = [];
@@ -68,7 +68,7 @@ export async function captureShots(options) {
                 const page = await context.newPage();
                 const path = localizePath({ path: shot.path(ids), locale });
                 await page.goto(`${baseUrl}${path}`, { waitUntil: 'load' });
-                await page.addStyleTag({ content: FREEZE_CSS });
+                await page.addStyleTag({ content: FREEZE_CSS + css });
                 await page.waitForTimeout(settleMs);
                 await shot.prepare?.({
                     page,

@@ -68,6 +68,8 @@ export type CaptureOptions<Ids, Role extends string, Key extends string = string
 	viewport?: { width: number; height: number };
 	/** How long a page gets after `load`: live queries keep connections open, so there is no idle */
 	settleMs?: number;
+	/** Further CSS for every captured page, e.g. to hide dev-only overlays */
+	css?: string;
 	/** Passed to `chromium.launch`, e.g. an `executablePath` for a browser installed elsewhere */
 	launch?: LaunchOptions;
 };
@@ -119,7 +121,8 @@ export async function captureShots<Ids, Role extends string, Key extends string 
 		localizePath = ({ path }) => path,
 		themeStorage = (theme) => ({ theme }),
 		viewport = { width: 1280, height: 800 },
-		settleMs = 2000
+		settleMs = 2000,
+		css = ''
 	} = options;
 	const shots = options.shots.filter((s) => !filter || s.id.startsWith(filter));
 	const browser = await chromium.launch(options.launch);
@@ -189,7 +192,7 @@ export async function captureShots<Ids, Role extends string, Key extends string 
 				const page = await context.newPage();
 				const path = localizePath({ path: shot.path(ids), locale });
 				await page.goto(`${baseUrl}${path}`, { waitUntil: 'load' });
-				await page.addStyleTag({ content: FREEZE_CSS });
+				await page.addStyleTag({ content: FREEZE_CSS + css });
 				await page.waitForTimeout(settleMs);
 
 				await shot.prepare?.({

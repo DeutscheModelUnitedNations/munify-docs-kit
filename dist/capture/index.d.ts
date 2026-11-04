@@ -66,6 +66,8 @@ export type CaptureOptions<Ids, Role extends string, Key extends string = string
     };
     /** How long a page gets after `load`: live queries keep connections open, so there is no idle */
     settleMs?: number;
+    /** Further CSS for every captured page, e.g. to hide dev-only overlays */
+    css?: string;
     /** Passed to `chromium.launch`, e.g. an `executablePath` for a browser installed elsewhere */
     launch?: LaunchOptions;
 };
