@@ -5,6 +5,7 @@ import { parseFrontmatter } from './render';
  * returns: raw markdown keyed by `<root>/<locale>/<slug>.md`, bundled into the server build.
  * Pages missing in a locale fall back to `baseLocale`. Rendered pages are cached per locale.
  */
+/** Pass the app's locale type explicitly: `createDocsContent<Locale>({ … })`. */
 export function createDocsContent({ sources, baseLocale, render, root = '/docs' }) {
     const pattern = new RegExp(`^${root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/([^/]+)/(.+)\\.md$`);
     const cache = new Map();

@@ -32,7 +32,7 @@ describe('createDocsNav', () => {
 });
 
 describe('createDocsContent', () => {
-	const content = createDocsContent({
+	const content = createDocsContent<'de' | 'en'>({
 		baseLocale: 'de',
 		render: ({ source, slug, locale }) => renderDoc({ source, slug, locale }),
 		sources: {
