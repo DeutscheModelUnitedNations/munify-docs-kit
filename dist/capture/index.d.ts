@@ -48,8 +48,16 @@ export type CaptureOptions<Ids, Role extends string, Key extends string = string
     themes?: readonly string[];
     /** Only shots whose id starts with this */
     filter?: string;
-    /** Sets the locale in a new browser context, Paraglide's cookie by default */
-    localeCookie?: string;
+    /**
+     * Sets the locale in a new browser context, Paraglide's cookie by default. `false` for apps
+     * that take the locale from the URL only; see `localizePath`
+     */
+    localeCookie?: string | false;
+    /** A shot's path in a locale, for apps with the locale in the URL (`/en/dashboard`) */
+    localizePath?: (input: {
+        path: string;
+        locale: string;
+    }) => string;
     /** localStorage entries that select a theme, `{ theme }` by default */
     themeStorage?: (theme: string) => Record<string, string>;
     viewport?: {

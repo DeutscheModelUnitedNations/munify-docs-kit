@@ -50,8 +50,13 @@ export type CaptureOptions<Ids, Role extends string, Key extends string = string
 	themes?: readonly string[];
 	/** Only shots whose id starts with this */
 	filter?: string;
-	/** Sets the locale in a new browser context, Paraglide's cookie by default */
-	localeCookie?: string;
+	/**
+	 * Sets the locale in a new browser context, Paraglide's cookie by default. `false` for apps
+	 * that take the locale from the URL only; see `localizePath`
+	 */
+	localeCookie?: string | false;
+	/** A shot's path in a locale, for apps with the locale in the URL (`/en/dashboard`) */
+	localizePath?: (input: { path: string; locale: string }) => string;
 	/** localStorage entries that select a theme, `{ theme }` by default */
 	themeStorage?: (theme: string) => Record<string, string>;
 	viewport?: { width: number; height: number };
@@ -103,6 +108,7 @@ export async function captureShots<Ids, Role extends string, Key extends string 
 		themes = SCREENSHOT_THEMES,
 		filter,
 		localeCookie = 'PARAGLIDE_LOCALE',
+		localizePath = ({ path }) => path,
 		themeStorage = (theme) => ({ theme }),
 		viewport = { width: 1280, height: 800 },
 		settleMs = 2000
@@ -142,7 +148,9 @@ export async function captureShots<Ids, Role extends string, Key extends string 
 				reducedMotion: 'reduce',
 				locale
 			});
-			await context.addCookies([{ name: localeCookie, value: locale, url: baseUrl }]);
+			if (localeCookie) {
+				await context.addCookies([{ name: localeCookie, value: locale, url: baseUrl }]);
+			}
 			await context.addInitScript(
 				(entries) => {
 					for (const [key, value] of Object.entries(entries)) localStorage.setItem(key, value);
@@ -171,7 +179,8 @@ export async function captureShots<Ids, Role extends string, Key extends string 
 				const context = await newContext({ role: shot.role, locale, theme, shot });
 				contexts.push(context);
 				const page = await context.newPage();
-				await page.goto(`${baseUrl}${shot.path(ids)}`, { waitUntil: 'load' });
+				const path = localizePath({ path: shot.path(ids), locale });
+				await page.goto(`${baseUrl}${path}`, { waitUntil: 'load' });
 				await page.addStyleTag({ content: FREEZE_CSS });
 				await page.waitForTimeout(settleMs);
 
@@ -183,7 +192,9 @@ export async function captureShots<Ids, Role extends string, Key extends string 
 						const other = await newContext({ role, locale, theme });
 						contexts.push(other);
 						const otherPage = await other.newPage();
-						await otherPage.goto(`${baseUrl}${path}`, { waitUntil: 'load' });
+						await otherPage.goto(`${baseUrl}${localizePath({ path, locale })}`, {
+							waitUntil: 'load'
+						});
 						await otherPage.waitForTimeout(settleMs);
 						return otherPage;
 					}
@@ -191,9 +202,9 @@ export async function captureShots<Ids, Role extends string, Key extends string 
 				await page.evaluate(() => document.fonts.ready);
 				await page.waitForTimeout(400);
 
-				const path = join(outDir, locale, theme, `${shot.id}.jpg`);
-				await mkdir(dirname(path), { recursive: true });
-				const screenshot = { path, type: 'jpeg', quality: 82 } as const;
+				const file = join(outDir, locale, theme, `${shot.id}.jpg`);
+				await mkdir(dirname(file), { recursive: true });
+				const screenshot = { path: file, type: 'jpeg', quality: 82 } as const;
 				if (typeof shot.clip === 'function') await shot.clip(page, t).screenshot(screenshot);
 				else if (shot.clip) await page.locator(shot.clip).first().screenshot(screenshot);
 				else await page.screenshot({ ...screenshot, fullPage: shot.fullPage });

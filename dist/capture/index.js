@@ -25,7 +25,7 @@ async function translator({ messagesDir, locale }) {
  * re-stages the data, so shots never see what an earlier one changed.
  */
 export async function captureShots(options) {
-    const { baseUrl, roles, login, stage, outDir, messagesDir, locales, themes = SCREENSHOT_THEMES, filter, localeCookie = 'PARAGLIDE_LOCALE', themeStorage = (theme) => ({ theme }), viewport = { width: 1280, height: 800 }, settleMs = 2000 } = options;
+    const { baseUrl, roles, login, stage, outDir, messagesDir, locales, themes = SCREENSHOT_THEMES, filter, localeCookie = 'PARAGLIDE_LOCALE', localizePath = ({ path }) => path, themeStorage = (theme) => ({ theme }), viewport = { width: 1280, height: 800 }, settleMs = 2000 } = options;
     const shots = options.shots.filter((s) => !filter || s.id.startsWith(filter));
     const browser = await chromium.launch();
     const failures = [];
@@ -49,7 +49,9 @@ export async function captureShots(options) {
                 reducedMotion: 'reduce',
                 locale
             });
-            await context.addCookies([{ name: localeCookie, value: locale, url: baseUrl }]);
+            if (localeCookie) {
+                await context.addCookies([{ name: localeCookie, value: locale, url: baseUrl }]);
+            }
             await context.addInitScript((entries) => {
                 for (const [key, value] of Object.entries(entries))
                     localStorage.setItem(key, value);
@@ -64,7 +66,8 @@ export async function captureShots(options) {
                 const context = await newContext({ role: shot.role, locale, theme, shot });
                 contexts.push(context);
                 const page = await context.newPage();
-                await page.goto(`${baseUrl}${shot.path(ids)}`, { waitUntil: 'load' });
+                const path = localizePath({ path: shot.path(ids), locale });
+                await page.goto(`${baseUrl}${path}`, { waitUntil: 'load' });
                 await page.addStyleTag({ content: FREEZE_CSS });
                 await page.waitForTimeout(settleMs);
                 await shot.prepare?.({
@@ -75,16 +78,18 @@ export async function captureShots(options) {
                         const other = await newContext({ role, locale, theme });
                         contexts.push(other);
                         const otherPage = await other.newPage();
-                        await otherPage.goto(`${baseUrl}${path}`, { waitUntil: 'load' });
+                        await otherPage.goto(`${baseUrl}${localizePath({ path, locale })}`, {
+                            waitUntil: 'load'
+                        });
                         await otherPage.waitForTimeout(settleMs);
                         return otherPage;
                     }
                 });
                 await page.evaluate(() => document.fonts.ready);
                 await page.waitForTimeout(400);
-                const path = join(outDir, locale, theme, `${shot.id}.jpg`);
-                await mkdir(dirname(path), { recursive: true });
-                const screenshot = { path, type: 'jpeg', quality: 82 };
+                const file = join(outDir, locale, theme, `${shot.id}.jpg`);
+                await mkdir(dirname(file), { recursive: true });
+                const screenshot = { path: file, type: 'jpeg', quality: 82 };
                 if (typeof shot.clip === 'function')
                     await shot.clip(page, t).screenshot(screenshot);
                 else if (shot.clip)
