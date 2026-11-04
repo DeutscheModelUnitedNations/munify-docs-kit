@@ -27,7 +27,7 @@ async function translator({ messagesDir, locale }) {
 export async function captureShots(options) {
     const { baseUrl, roles, login, stage, outDir, messagesDir, locales, themes = SCREENSHOT_THEMES, filter, localeCookie = 'PARAGLIDE_LOCALE', localizePath = ({ path }) => path, themeStorage = (theme) => ({ theme }), viewport = { width: 1280, height: 800 }, settleMs = 2000 } = options;
     const shots = options.shots.filter((s) => !filter || s.id.startsWith(filter));
-    const browser = await chromium.launch();
+    const browser = await chromium.launch(options.launch);
     const failures = [];
     async function signIn(role) {
         const context = await browser.newContext();

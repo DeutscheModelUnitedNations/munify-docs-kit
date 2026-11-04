@@ -1,7 +1,13 @@
 import { mkdir, readFile } from 'node:fs/promises';
 import { createConnection } from 'node:net';
 import { dirname, join } from 'node:path';
-import { chromium, type Browser, type BrowserContext, type Locator, type Page } from 'playwright';
+import {
+	chromium,
+	type BrowserContext,
+	type LaunchOptions,
+	type Locator,
+	type Page
+} from 'playwright';
 import { SCREENSHOT_THEMES } from '../screenshots';
 
 /** Looks up an app message in the locale being captured, `Key` being the app's message keys */
@@ -62,6 +68,8 @@ export type CaptureOptions<Ids, Role extends string, Key extends string = string
 	viewport?: { width: number; height: number };
 	/** How long a page gets after `load`: live queries keep connections open, so there is no idle */
 	settleMs?: number;
+	/** Passed to `chromium.launch`, e.g. an `executablePath` for a browser installed elsewhere */
+	launch?: LaunchOptions;
 };
 
 // Animations and transitions would otherwise be captured halfway
@@ -114,7 +122,7 @@ export async function captureShots<Ids, Role extends string, Key extends string 
 		settleMs = 2000
 	} = options;
 	const shots = options.shots.filter((s) => !filter || s.id.startsWith(filter));
-	const browser = await chromium.launch();
+	const browser = await chromium.launch(options.launch);
 	const failures: string[] = [];
 
 	async function signIn(role: Role): Promise<StorageState> {

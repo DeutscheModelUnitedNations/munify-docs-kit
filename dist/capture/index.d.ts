@@ -1,4 +1,4 @@
-import { type BrowserContext, type Locator, type Page } from 'playwright';
+import { type BrowserContext, type LaunchOptions, type Locator, type Page } from 'playwright';
 /** Looks up an app message in the locale being captured, `Key` being the app's message keys */
 export type Translate<Key extends string = string> = (key: Key) => string;
 export type StorageState = Awaited<ReturnType<BrowserContext['storageState']>>;
@@ -66,6 +66,8 @@ export type CaptureOptions<Ids, Role extends string, Key extends string = string
     };
     /** How long a page gets after `load`: live queries keep connections open, so there is no idle */
     settleMs?: number;
+    /** Passed to `chromium.launch`, e.g. an `executablePath` for a browser installed elsewhere */
+    launch?: LaunchOptions;
 };
 /**
  * Captures every shot in every locale and theme and returns the failures. Each capture
