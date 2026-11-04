@@ -1,9 +1,10 @@
 name: Release
 
-# Publishes to npm when a GitHub release is published. Tag the release `v<version>`, matching
-# `version` in package.json. Uses npm's trusted publishing: npm trusts this workflow
-# (`release.yml` of this repository, set in the package's settings on npmjs.com) through GitHub's
-# OIDC token, so there is no npm token, and the package gets provenance on its own.
+# Publishes to npm when a GitHub release is published. The release's tag is the version: `v0.2.0`
+# publishes 0.2.0, whatever package.json says, so a release needs no bump commit. Uses npm's
+# trusted publishing: npm trusts this workflow (`release.yml` of this repository, set in the
+# package's settings on npmjs.com) through GitHub's OIDC token, so there is no npm token, and the
+# package gets provenance on its own.
 on:
   release:
     types: [published]
@@ -25,8 +26,12 @@ jobs:
       # Trusted publishing needs npm 11.5.1 or newer
       - run: npm install -g npm@latest
       - run: bun install --frozen-lockfile
-      - name: Check the tag matches package.json
-        run: test "v$(node -p 'require("./package.json").version')" = "${{ github.event.release.tag_name }}"
+      - name: Take the version from the tag
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]] || { echo "::error::Tag $TAG is not v<semver>"; exit 1; }
+          npm version "${TAG#v}" --no-git-tag-version --allow-same-version
       - run: bun run check
       - run: bun run test
       - run: bun run build

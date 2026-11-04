@@ -50,6 +50,7 @@ bun run build   # svelte-package into dist/
 
 ## Releasing
 
-Bump `version` in `package.json`, merge, then publish a GitHub release tagged `v<version>`. The
-release workflow builds and publishes to npm through trusted publishing (no token: npm trusts
+Publish a GitHub release tagged `v<version>` (`gh release create v0.2.0 --generate-notes`). The tag
+is the version: the release workflow sets it in `package.json` before publishing, so no bump
+commit is needed, and a version npm already has is refused. The workflow builds and publishes to npm through trusted publishing (no token: npm trusts
 `release.yml` of this repository, set in the package's settings on npmjs.com).
