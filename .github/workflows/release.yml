@@ -1,8 +1,9 @@
 name: Release
 
 # Publishes to npm when a GitHub release is published. Tag the release `v<version>`, matching
-# `version` in package.json. Needs the NPM_TOKEN secret (an npm automation token with
-# publish rights on the @deutschemodelunitednations scope).
+# `version` in package.json. Uses npm's trusted publishing: npm trusts this workflow
+# (`release.yml` of this repository, set in the package's settings on npmjs.com) through GitHub's
+# OIDC token, so there is no npm token, and the package gets provenance on its own.
 on:
   release:
     types: [published]
@@ -21,12 +22,12 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm 11.5.1 or newer
+      - run: npm install -g npm@latest
       - run: bun install --frozen-lockfile
       - name: Check the tag matches package.json
         run: test "v$(node -p 'require("./package.json").version')" = "${{ github.event.release.tag_name }}"
       - run: bun run check
       - run: bun run test
       - run: bun run build
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --access public
