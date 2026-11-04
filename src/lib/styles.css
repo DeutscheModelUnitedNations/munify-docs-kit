@@ -1,8 +1,11 @@
 /*
  * Styles of the docs kit. Import once from the app's global stylesheet:
  *   @import '@deutschemodelunitednations/docs-kit/styles.css';
- * Uses the DaisyUI theme tokens, so tours and screenshots follow the app's theme.
+ * Uses the DaisyUI theme tokens, so tours and screenshots follow the app's theme, and tells
+ * Tailwind to scan the kit's components and rendered markup for classes.
  */
+
+@source './';
 
 /* Manual screenshots ship in both themes, show the one matching the app theme */
 .docs-shot-dark {

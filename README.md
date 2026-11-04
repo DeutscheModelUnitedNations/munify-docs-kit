@@ -16,11 +16,12 @@ route gets which page, tours, shot list, how to stage data); the kit holds every
 | `@deutschemodelunitednations/docs-kit/capture`    | `captureShots` (Playwright, every shot in every locale and theme), `portInUse`, `waitForServer`                                                                                                |
 | `@deutschemodelunitednations/docs-kit/styles.css` | Theme-aware screenshots and the `docs-tour` popover style                                                                                                                                      |
 
-The components use DaisyUI and Tailwind classes, so the app's Tailwind has to see them:
+The components use DaisyUI and Tailwind classes. Import the kit's stylesheet after Tailwind;
+it registers the kit as a Tailwind source:
 
 ```css
+@import 'tailwindcss';
 @import '@deutschemodelunitednations/docs-kit/styles.css';
-@source '../node_modules/@deutschemodelunitednations/docs-kit/dist';
 ```
 
 No component knows about Paraglide: every label is a prop, so the app passes its own messages.
