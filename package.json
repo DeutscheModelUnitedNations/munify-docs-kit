@@ -44,7 +44,6 @@
 	},
 	"scripts": {
 		"build": "svelte-package -i src/lib -o dist",
-		"prepare": "svelte-package -i src/lib -o dist",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"test": "vitest run",
 		"format": "prettier --write .",

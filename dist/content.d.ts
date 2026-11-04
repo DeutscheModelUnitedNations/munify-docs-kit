@@ -1,0 +1,32 @@
+import { type RenderedDoc } from './render';
+export type LoadedDoc = RenderedDoc & {
+    /** Locale the page was actually rendered in, differs from the request on fallback */
+    locale: string;
+};
+/**
+ * Serves an app's markdown sources. `sources` is what
+ * `import.meta.glob('/docs/*\/**\/*.md', { query: '?raw', import: 'default', eager: true })`
+ * returns: raw markdown keyed by `<root>/<locale>/<slug>.md`, bundled into the server build.
+ * Pages missing in a locale fall back to `baseLocale`. Rendered pages are cached per locale.
+ */
+export declare function createDocsContent({ sources, baseLocale, render, root }: {
+    sources: Record<string, string>;
+    baseLocale: string;
+    /** Renders a page's source for a reader of `locale`, usually `renderDoc` with app options */
+    render: (input: {
+        source: string;
+        slug: string;
+        locale: string;
+    }) => RenderedDoc;
+    root?: string;
+}): {
+    docExists: (slug: string) => boolean;
+    /** Renders a page in the requested locale, falling back to the base locale. */
+    loadDoc({ slug, locale }: {
+        slug: string;
+        locale: string;
+    }): LoadedDoc | undefined;
+    /** Page titles for the sidebar, without rendering the full pages. */
+    docTitles(locale: string): Record<string, string>;
+};
+export type DocsContent = ReturnType<typeof createDocsContent>;
