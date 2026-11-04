@@ -4,20 +4,20 @@ import { dirname, join } from 'node:path';
 import { chromium, type Browser, type BrowserContext, type Locator, type Page } from 'playwright';
 import { SCREENSHOT_THEMES } from '../screenshots';
 
-/** Looks up an app message in the locale being captured */
-export type Translate = (key: string) => string;
+/** Looks up an app message in the locale being captured, `Key` being the app's message keys */
+export type Translate<Key extends string = string> = (key: Key) => string;
 
 export type StorageState = Awaited<ReturnType<BrowserContext['storageState']>>;
 
-export type PrepareContext<Ids, Role extends string> = {
+export type PrepareContext<Ids, Role extends string, Key extends string = string> = {
 	page: Page;
 	ids: Ids;
-	t: Translate;
+	t: Translate<Key>;
 	/** Opens a second page signed in as another role, closed after the capture */
 	openAs: (role: Role, path: string) => Promise<Page>;
 };
 
-export type Shot<Ids, Role extends string> = {
+export type Shot<Ids, Role extends string, Key extends string = string> = {
 	/** Referenced from markdown as `shot:<id>` */
 	id: string;
 	role: Role;
@@ -25,23 +25,23 @@ export type Shot<Ids, Role extends string> = {
 	/** Database state on top of the staged data, before the page loads */
 	setup?: (ids: Ids) => Promise<void>;
 	/** Clicks and key presses to reach the view after the page loaded */
-	prepare?: (ctx: PrepareContext<Ids, Role>) => Promise<void>;
+	prepare?: (ctx: PrepareContext<Ids, Role, Key>) => Promise<void>;
 	/** localStorage entries set before the page loads */
 	storage?: Record<string, string>;
 	/** Captures only this element instead of the viewport */
-	clip?: string | ((page: Page, t: Translate) => Locator);
+	clip?: string | ((page: Page, t: Translate<Key>) => Locator);
 	viewport?: { width: number; height: number };
 	fullPage?: boolean;
 };
 
-export type CaptureOptions<Ids, Role extends string> = {
+export type CaptureOptions<Ids, Role extends string, Key extends string = string> = {
 	baseUrl: string;
-	shots: Shot<Ids, Role>[];
+	shots: Shot<Ids, Role, Key>[];
 	roles: Role[];
 	/** Signs in as `role` on a fresh page and returns once the session is established */
 	login: (input: { page: Page; baseUrl: string; role: Role }) => Promise<void>;
 	/** Resets the data the shots run against, once per capture. Returns the ids shots use */
-	stage: (t: Translate) => Promise<Ids>;
+	stage: (t: Translate<Key>) => Promise<Ids>;
 	/** Where `<locale>/<theme>/<id>.jpg` is written, usually `static/docs-assets/screenshots` */
 	outDir: string;
 	/** Paraglide's `messages/` directory, one `<locale>.json` each */
@@ -68,11 +68,17 @@ const FREEZE_CSS = `*, *::before, *::after {
 	caret-color: transparent !important;
 }`;
 
-async function translator({ messagesDir, locale }: { messagesDir: string; locale: string }) {
+async function translator<Key extends string>({
+	messagesDir,
+	locale
+}: {
+	messagesDir: string;
+	locale: string;
+}): Promise<Translate<Key>> {
 	const messages: Record<string, unknown> = JSON.parse(
 		await readFile(join(messagesDir, `${locale}.json`), 'utf8')
 	);
-	return (key: string) => {
+	return (key: Key) => {
 		const message = messages[key];
 		if (typeof message !== 'string') throw new Error(`Unknown message ${key}`);
 		return message;
@@ -83,7 +89,9 @@ async function translator({ messagesDir, locale }: { messagesDir: string; locale
  * Captures every shot in every locale and theme and returns the failures. Each capture
  * re-stages the data, so shots never see what an earlier one changed.
  */
-export async function captureShots<Ids, Role extends string>(options: CaptureOptions<Ids, Role>) {
+export async function captureShots<Ids, Role extends string, Key extends string = string>(
+	options: CaptureOptions<Ids, Role, Key>
+) {
 	const {
 		baseUrl,
 		roles,
@@ -125,7 +133,7 @@ export async function captureShots<Ids, Role extends string>(options: CaptureOpt
 			role: Role;
 			locale: string;
 			theme: string;
-			shot?: Shot<Ids, Role>;
+			shot?: Shot<Ids, Role, Key>;
 		}) {
 			const context = await browser.newContext({
 				storageState: states.get(role),
@@ -150,10 +158,10 @@ export async function captureShots<Ids, Role extends string>(options: CaptureOpt
 			theme,
 			t
 		}: {
-			shot: Shot<Ids, Role>;
+			shot: Shot<Ids, Role, Key>;
 			locale: string;
 			theme: string;
-			t: Translate;
+			t: Translate<Key>;
 		}) {
 			const ids = await stage(t);
 			await shot.setup?.(ids);
@@ -196,7 +204,7 @@ export async function captureShots<Ids, Role extends string>(options: CaptureOpt
 
 		for (const shot of shots) {
 			for (const locale of locales) {
-				const t = await translator({ messagesDir, locale });
+				const t = await translator<Key>({ messagesDir, locale });
 				for (const theme of themes) {
 					const input = { shot, locale, theme, t };
 					try {

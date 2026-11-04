@@ -1,15 +1,15 @@
 import { type BrowserContext, type Locator, type Page } from 'playwright';
-/** Looks up an app message in the locale being captured */
-export type Translate = (key: string) => string;
+/** Looks up an app message in the locale being captured, `Key` being the app's message keys */
+export type Translate<Key extends string = string> = (key: Key) => string;
 export type StorageState = Awaited<ReturnType<BrowserContext['storageState']>>;
-export type PrepareContext<Ids, Role extends string> = {
+export type PrepareContext<Ids, Role extends string, Key extends string = string> = {
     page: Page;
     ids: Ids;
-    t: Translate;
+    t: Translate<Key>;
     /** Opens a second page signed in as another role, closed after the capture */
     openAs: (role: Role, path: string) => Promise<Page>;
 };
-export type Shot<Ids, Role extends string> = {
+export type Shot<Ids, Role extends string, Key extends string = string> = {
     /** Referenced from markdown as `shot:<id>` */
     id: string;
     role: Role;
@@ -17,20 +17,20 @@ export type Shot<Ids, Role extends string> = {
     /** Database state on top of the staged data, before the page loads */
     setup?: (ids: Ids) => Promise<void>;
     /** Clicks and key presses to reach the view after the page loaded */
-    prepare?: (ctx: PrepareContext<Ids, Role>) => Promise<void>;
+    prepare?: (ctx: PrepareContext<Ids, Role, Key>) => Promise<void>;
     /** localStorage entries set before the page loads */
     storage?: Record<string, string>;
     /** Captures only this element instead of the viewport */
-    clip?: string | ((page: Page, t: Translate) => Locator);
+    clip?: string | ((page: Page, t: Translate<Key>) => Locator);
     viewport?: {
         width: number;
         height: number;
     };
     fullPage?: boolean;
 };
-export type CaptureOptions<Ids, Role extends string> = {
+export type CaptureOptions<Ids, Role extends string, Key extends string = string> = {
     baseUrl: string;
-    shots: Shot<Ids, Role>[];
+    shots: Shot<Ids, Role, Key>[];
     roles: Role[];
     /** Signs in as `role` on a fresh page and returns once the session is established */
     login: (input: {
@@ -39,7 +39,7 @@ export type CaptureOptions<Ids, Role extends string> = {
         role: Role;
     }) => Promise<void>;
     /** Resets the data the shots run against, once per capture. Returns the ids shots use */
-    stage: (t: Translate) => Promise<Ids>;
+    stage: (t: Translate<Key>) => Promise<Ids>;
     /** Where `<locale>/<theme>/<id>.jpg` is written, usually `static/docs-assets/screenshots` */
     outDir: string;
     /** Paraglide's `messages/` directory, one `<locale>.json` each */
@@ -63,7 +63,7 @@ export type CaptureOptions<Ids, Role extends string> = {
  * Captures every shot in every locale and theme and returns the failures. Each capture
  * re-stages the data, so shots never see what an earlier one changed.
  */
-export declare function captureShots<Ids, Role extends string>(options: CaptureOptions<Ids, Role>): Promise<string[]>;
+export declare function captureShots<Ids, Role extends string, Key extends string = string>(options: CaptureOptions<Ids, Role, Key>): Promise<string[]>;
 /** Whether something listens on `port` on this machine */
 export declare function portInUse(port: number): Promise<boolean>;
 /** Polls `url` until it answers, failing when `isAlive` says the server is gone. */
