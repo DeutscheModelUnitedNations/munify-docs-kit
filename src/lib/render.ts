@@ -36,12 +36,12 @@ export function parseFrontmatter(source: string): { frontmatter: DocsFrontmatter
 
 // Docusaurus-style admonitions (:::tip Optional title ... :::) mapped to DaisyUI alerts
 const ADMONITION_CLASSES: Record<string, { alert: string; icon: string }> = {
-	note: { alert: 'alert-info', icon: 'fa-circle-info' },
-	info: { alert: 'alert-info', icon: 'fa-circle-info' },
-	tip: { alert: 'alert-success', icon: 'fa-lightbulb' },
-	caution: { alert: 'alert-warning', icon: 'fa-triangle-exclamation' },
-	warning: { alert: 'alert-warning', icon: 'fa-triangle-exclamation' },
-	danger: { alert: 'alert-error', icon: 'fa-circle-exclamation' }
+	note: { alert: 'alert-info', icon: 'ph-info' },
+	info: { alert: 'alert-info', icon: 'ph-info' },
+	tip: { alert: 'alert-success', icon: 'ph-lightbulb' },
+	caution: { alert: 'alert-warning', icon: 'ph-warning' },
+	warning: { alert: 'alert-warning', icon: 'ph-warning' },
+	danger: { alert: 'alert-error', icon: 'ph-warning-circle' }
 };
 
 const EXPLICIT_ID = /\s*\{#([\w-]+)\}\s*$/;
@@ -54,8 +54,8 @@ export type RenderOptions = {
 	/** Where generated screenshots are served from, see `screenshotPath` */
 	screenshotBase?: string;
 	/**
-	 * FontAwesome classes put in front of an icon name, e.g. `fa-duotone` or
-	 * `fa-sharp-duotone fa-solid`
+	 * Phosphor weight class put in front of an icon name (`ph-info`), e.g. `ph-duotone` or
+	 * `ph-fill`. The app loads that weight's CSS from `@phosphor-icons/web`.
 	 */
 	iconPrefix?: string;
 	/**
@@ -86,7 +86,7 @@ export function renderDoc({
 	locale,
 	basePath = '/docs',
 	screenshotBase = SCREENSHOT_BASE,
-	iconPrefix = 'fa-duotone',
+	iconPrefix = 'ph-duotone',
 	extensions = []
 }: RenderOptions & { source: string; slug: string }): RenderedDoc {
 	const { frontmatter, body } = parseFrontmatter(source);

@@ -10,7 +10,7 @@
 		labels,
 		onTour,
 		items,
-		iconPrefix = 'fa-duotone',
+		iconPrefix = 'ph-duotone',
 		buttonClass = 'btn btn-ghost btn-circle btn-sm',
 		tooltip
 	}: {
@@ -40,7 +40,7 @@
 		data-tip={tooltip}
 		data-testid="help-menu"
 	>
-		<i class="{iconPrefix} fa-circle-question text-lg"></i>
+		<i class="{iconPrefix} ph-question text-lg"></i>
 	</button>
 	<ul class="dropdown-content menu bg-base-100 rounded-box z-50 mt-2 w-64 p-2 shadow-md">
 		{@render items?.({ close })}
@@ -53,16 +53,16 @@
 						onTour?.();
 					}}
 				>
-					<i class="{iconPrefix} fa-route w-5 text-center"></i>
+					<i class="{iconPrefix} ph-path w-5 text-center"></i>
 					{labels.tour}
 				</button>
 			</li>
 		{/if}
 		<li>
 			<a href={manualHref} target="_blank" rel="noopener noreferrer">
-				<i class="{iconPrefix} fa-book w-5 text-center"></i>
+				<i class="{iconPrefix} ph-book-open w-5 text-center"></i>
 				<span class="flex-1">{labels.manual}</span>
-				<i class="{iconPrefix} fa-arrow-up-right text-base-content/50 text-xs" aria-hidden="true"
+				<i class="{iconPrefix} ph-arrow-up-right text-base-content/50 text-xs" aria-hidden="true"
 				></i>
 			</a>
 		</li>

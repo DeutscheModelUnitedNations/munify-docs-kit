@@ -53,10 +53,11 @@ describe('renderDoc', () => {
 
 	it('renders admonitions as alerts with the icon prefix', () => {
 		const { html } = render(':::tip Gut zu wissen\nInhalt **fett**\n:::', {
-			iconPrefix: 'fa-sharp-duotone fa-solid'
+			iconPrefix: 'ph-fill'
 		});
 		expect(html).toContain('alert-success');
-		expect(html).toContain('fa-sharp-duotone fa-solid fa-lightbulb');
+		expect(html).toContain('ph-fill ph-lightbulb');
+		expect(html).not.toContain('fa-');
 		expect(html).toContain('Gut zu wissen');
 		expect(html).toContain('<strong>fett</strong>');
 	});

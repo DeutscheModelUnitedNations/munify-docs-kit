@@ -3,7 +3,7 @@
 The shared docs kit of the MUNify apps (CHASE, DELEGATOR). See README.md for what it exports.
 
 - **Generic only.** Nothing here knows an app: no Paraglide, no `$app/*`, no app routes. Labels,
-  icon prefixes (`fa-duotone` in CHASE, `fa-sharp-duotone fa-solid` in DELEGATOR), base paths and
+  the Phosphor weight class (`iconPrefix`, `ph-duotone` in both apps, which load the icon CSS), base paths and
   app-specific markdown extensions (CHASE's live demos) come in as options or props.
 - **Two or more parameters take one object**, as in the apps.
 - `src/lib` is packaged by `svelte-package` into `dist/`; `src/ambient.d.ts` is not shipped.
