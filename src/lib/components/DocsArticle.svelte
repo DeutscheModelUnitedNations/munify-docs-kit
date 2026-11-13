@@ -16,7 +16,7 @@
 		labels,
 		fallbackNotice,
 		editUrl,
-		iconPrefix = 'fa-duotone',
+		iconPrefix = 'ph-duotone',
 		attach
 	}: {
 		nav: DocsNav;
@@ -47,7 +47,7 @@
 		{#if doc}
 			{#if fallbackNotice}
 				<div role="note" class="alert alert-soft alert-info not-prose mb-6">
-					<i class="{iconPrefix} fa-language"></i>
+					<i class="{iconPrefix} ph-translate"></i>
 					<span>{fallbackNotice}</span>
 				</div>
 			{/if}
@@ -68,7 +68,7 @@
 		<div class="not-prose border-base-300 mt-12 flex flex-wrap justify-between gap-4 border-t pt-6">
 			{#if neighbours.prev}
 				<a href={href(neighbours.prev)} class="btn btn-ghost">
-					<i class="{iconPrefix} fa-arrow-left"></i>
+					<i class="{iconPrefix} ph-arrow-left"></i>
 					{titleFor(neighbours.prev)}
 				</a>
 			{:else}
@@ -77,7 +77,7 @@
 			{#if neighbours.next}
 				<a href={href(neighbours.next)} class="btn btn-ghost">
 					{titleFor(neighbours.next)}
-					<i class="{iconPrefix} fa-arrow-right"></i>
+					<i class="{iconPrefix} ph-arrow-right"></i>
 				</a>
 			{/if}
 		</div>
@@ -90,7 +90,7 @@
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					<i class="{iconPrefix} fa-pen-to-square"></i>
+					<i class="{iconPrefix} ph-pencil-simple"></i>
 					{labels.editPage}
 				</a>
 			</p>

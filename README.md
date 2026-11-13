@@ -26,6 +26,10 @@ it registers the kit as a Tailwind source:
 
 No component knows about Paraglide: every label is a prop, so the app passes its own messages.
 
+Icons are [Phosphor](https://phosphoricons.com) web-font classes (`ph-duotone ph-info`). The kit
+bundles no icon CSS: the app loads the weight it passes as `iconPrefix` (`ph-duotone` by default)
+from `@phosphor-icons/web`. Up to `0.1.x` the kit used Font Awesome names.
+
 ## Using it in an app
 
 1. Markdown in `docs/<locale>/…/*.md` with a `title` in the frontmatter.

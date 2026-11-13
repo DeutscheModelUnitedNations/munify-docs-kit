@@ -12,7 +12,7 @@
 		current,
 		href,
 		labels,
-		iconPrefix = 'fa-duotone',
+		iconPrefix = 'ph-duotone',
 		children
 	}: {
 		nav: DocsNav;
@@ -32,7 +32,7 @@
 
 	<div class="drawer-content min-w-0 pb-16 lg:pl-10">
 		<label for="docs-drawer" class="btn btn-sm btn-ghost mb-4 lg:hidden">
-			<i class="{iconPrefix} fa-bars"></i>
+			<i class="{iconPrefix} ph-list"></i>
 			{labels.menu}
 		</label>
 		{@render children()}
